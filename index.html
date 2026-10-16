@@ -1,0 +1,423 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<meta name="theme-color" content="#ffd9c7">
+<title>Яна, с днём рождения!</title>
+<meta property="og:title" content="Яна, с днём рождения! 🎉">
+<meta property="og:description" content="Замечательный человек. Фантастический закупщик. Легенда команды СТМ.">
+<meta property="og:image" content="img/sunset.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;800&family=Unbounded:wght@500;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#2b2140; --muted:#6c5f86; --paper:#fff8f2;
+  --peach:#ffb899; --rose:#ff7aa8; --lilac:#b79cff; --mint:#7fe3c4; --sun:#ffd166;
+  --grad:linear-gradient(135deg,#ff9a76 0%,#ff6fa5 45%,#9f7bff 100%);
+  --radius:26px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;overflow-x:clip}
+body{font-family:Manrope,system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;color:var(--ink);background:var(--paper);overflow-x:clip;-webkit-font-smoothing:antialiased}
+body.locked{overflow:hidden;height:100vh}
+h1,h2,h3,.display{font-family:Unbounded,Manrope,system-ui,sans-serif}
+img{display:block;max-width:100%}
+canvas#confetti{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:60}
+
+/* ---------- фон ---------- */
+.bg{position:fixed;inset:0;z-index:-2;background:
+  radial-gradient(60vmax 60vmax at 10% 0%,#ffe0d0 0,transparent 60%),
+  radial-gradient(55vmax 55vmax at 100% 20%,#e6dcff 0,transparent 60%),
+  radial-gradient(60vmax 60vmax at 40% 100%,#d5f6ea 0,transparent 60%),var(--paper)}
+.blob{position:fixed;z-index:-1;border-radius:50%;filter:blur(40px);opacity:.55;animation:drift 18s ease-in-out infinite alternate}
+.blob.b1{width:34vmax;height:34vmax;background:#ffc2a6;left:-10vmax;top:20vh}
+.blob.b2{width:30vmax;height:30vmax;background:#cdb8ff;right:-8vmax;top:55vh;animation-duration:23s}
+@keyframes drift{to{transform:translate(6vmax,-5vmax) scale(1.15)}}
+
+/* ---------- конверт ---------- */
+#intro{position:fixed;inset:0;z-index:80;display:grid;place-items:center;background:linear-gradient(160deg,#ffe3d4,#f1e6ff);transition:opacity .9s ease,visibility .9s}
+#intro.gone{opacity:0;visibility:hidden}
+.intro-box{text-align:center;padding:24px}
+.envelope{position:relative;width:min(78vw,340px);aspect-ratio:1.45;margin:0 auto 28px;cursor:pointer;animation:bob 2.8s ease-in-out infinite;filter:drop-shadow(0 22px 30px rgba(120,70,120,.28))}
+.envelope .back{position:absolute;inset:0;background:#ff9fb8;border-radius:14px}
+.envelope .card{position:absolute;left:8%;right:8%;top:8%;bottom:8%;background:#fff;border-radius:10px;display:grid;place-items:center;font-family:Unbounded,sans-serif;font-weight:800;font-size:clamp(20px,6vw,30px);color:#ff6fa5;transition:transform .8s cubic-bezier(.2,.9,.3,1.2)}
+.envelope .front{position:absolute;inset:0;border-radius:14px;background:
+  linear-gradient(to bottom right,transparent 49.6%,#ff7aa8 50%) left/50.2% 100% no-repeat,
+  linear-gradient(to bottom left,transparent 49.6%,#ff8db2 50%) right/50.2% 100% no-repeat;
+  clip-path:polygon(0 0,0 100%,100% 100%,100% 0,50% 55%)}
+.envelope .flap{position:absolute;left:0;right:0;top:0;height:56%;background:#ff6c9d;clip-path:polygon(0 0,100% 0,50% 100%);transform-origin:top;transition:transform .7s ease;border-radius:14px 14px 0 0}
+.envelope .heart{position:absolute;left:50%;top:50%;translate:-50% -50%;font-size:34px;z-index:3;transition:opacity .3s}
+.envelope.open .flap{transform:rotateX(180deg)}
+.envelope.open .card{transform:translateY(-62%) rotate(-3deg)}
+.envelope.open .heart{opacity:0}
+.intro-box p{font-weight:600;color:var(--muted);margin-bottom:16px;letter-spacing:.02em}
+@keyframes bob{50%{transform:translateY(-10px) rotate(-1deg)}}
+.btn{display:inline-block;border:0;cursor:pointer;font:800 17px Manrope,sans-serif;color:#fff;padding:16px 30px;border-radius:999px;background:var(--grad);box-shadow:0 14px 28px rgba(255,111,165,.4);transition:transform .2s,box-shadow .2s}
+.btn:hover{transform:translateY(-3px) scale(1.03)}
+.btn:active{transform:scale(.97)}
+
+/* ---------- шарики ---------- */
+.balloons{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+.balloon{position:absolute;bottom:-160px;width:46px;height:58px;border-radius:50% 50% 48% 48%;opacity:0;animation:rise linear infinite}
+.balloon::after{content:"";position:absolute;left:50%;top:100%;width:1.5px;height:70px;background:rgba(80,60,100,.35)}
+.balloon::before{content:"";position:absolute;left:50%;top:100%;translate:-50% -2px;border:6px solid transparent;border-bottom-color:inherit;border-top:0}
+@keyframes rise{0%{transform:translate(0,0) rotate(-4deg);opacity:0}8%{opacity:.95}50%{transform:translate(28px,-55vh) rotate(5deg)}100%{transform:translate(-18px,-125vh) rotate(-5deg);opacity:.9}}
+
+/* ---------- секции ---------- */
+section,header.hero{position:relative;z-index:1}
+section{padding:clamp(56px,10vw,110px) 20px}
+.wrap{max-width:1040px;margin:0 auto}
+.eyebrow{display:inline-block;font-weight:800;font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:var(--rose);margin-bottom:14px}
+.reveal{opacity:0;transform:translateY(34px) scale(.98);transition:opacity .8s ease,transform .8s cubic-bezier(.2,.8,.2,1)}
+.reveal.in{opacity:1;transform:none}
+
+/* hero */
+.hero{min-height:100svh;display:grid;align-items:center;padding-top:40px}
+.hero .wrap{display:grid;grid-template-columns:1.1fr .9fr;gap:clamp(24px,5vw,60px);align-items:center}
+.hero h1{font-size:clamp(54px,13vw,150px);line-height:.95;font-weight:800;letter-spacing:-.03em}
+.hero h1 .l{display:inline-block;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent;opacity:0;transform:translateY(60px) rotate(8deg);animation:pop .9s cubic-bezier(.2,1.3,.3,1) forwards;animation-play-state:paused}
+.started .hero h1 .l{animation-play-state:running}
+@keyframes pop{to{opacity:1;transform:none}}
+.hero .hb{font-family:Unbounded;font-weight:500;font-size:clamp(18px,3.4vw,30px);margin:18px 0 10px;min-height:1.4em}
+.hero .hb .caret{display:inline-block;width:3px;height:1em;background:var(--rose);margin-left:3px;vertical-align:-.12em;animation:blink 1s steps(2) infinite}
+@keyframes blink{50%{opacity:0}}
+.hero .tag{color:var(--muted);font-weight:600;font-size:clamp(16px,2.4vw,20px);max-width:30ch;line-height:1.5}
+.scroll-hint{margin-top:34px;font-weight:700;color:var(--muted);display:flex;align-items:center;gap:10px;font-size:14px}
+.scroll-hint i{display:block;width:22px;height:36px;border:2px solid var(--muted);border-radius:14px;position:relative}
+.scroll-hint i::after{content:"";position:absolute;left:50%;top:7px;width:4px;height:8px;border-radius:2px;background:var(--rose);translate:-50% 0;animation:wheel 1.6s ease-in-out infinite}
+@keyframes wheel{50%{transform:translateY(12px);opacity:.3}}
+
+.portrait{position:relative;justify-self:center;width:min(78vw,400px);aspect-ratio:.86;transform:rotate(3deg);transition:transform .4s}
+.portrait:hover{transform:rotate(0) scale(1.02)}
+.portrait .ring{position:absolute;inset:-14px;border-radius:44% 56% 52% 48%/48% 42% 58% 52%;background:conic-gradient(from 0deg,#ff9a76,#ff6fa5,#9f7bff,#7fe3c4,#ffd166,#ff9a76);animation:spin 9s linear infinite,morph 7s ease-in-out infinite alternate;filter:blur(1px)}
+.portrait .ph{position:absolute;inset:0;border-radius:44% 56% 52% 48%/48% 42% 58% 52%;overflow:hidden;animation:morph 7s ease-in-out infinite alternate;border:6px solid #fff}
+.portrait img{width:100%;height:100%;object-fit:cover;object-position:50% 25%}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes morph{50%{border-radius:56% 44% 46% 54%/42% 52% 48% 58%}}
+.spark{position:absolute;font-size:28px;animation:twinkle 2.4s ease-in-out infinite}
+.spark.s1{left:-18px;top:8%}.spark.s2{right:-12px;top:28%;animation-delay:.6s;font-size:22px}.spark.s3{left:6%;bottom:-10px;animation-delay:1.1s}.spark.s4{right:10%;bottom:6%;animation-delay:1.7s;font-size:20px}
+@keyframes twinkle{0%,100%{transform:scale(.4) rotate(0);opacity:.3}50%{transform:scale(1.2) rotate(25deg);opacity:1}}
+
+/* карточки */
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;margin-top:34px}
+.card3{position:relative;background:#fff;border-radius:var(--radius);padding:30px 26px 32px;box-shadow:0 18px 40px rgba(110,70,140,.12);overflow:hidden;transition:transform .35s,box-shadow .35s}
+.card3:hover{transform:translateY(-8px) rotate(-.6deg);box-shadow:0 28px 54px rgba(110,70,140,.2)}
+.card3::before{content:"";position:absolute;inset:0 0 auto 0;height:7px;background:var(--c)}
+.card3 .ico{width:66px;height:66px;border-radius:20px;display:grid;place-items:center;font-size:34px;background:color-mix(in srgb,var(--c) 22%,#fff);margin-bottom:18px;animation:wob 3.6s ease-in-out infinite}
+.card3:nth-child(2) .ico{animation-delay:.5s}.card3:nth-child(3) .ico{animation-delay:1s}
+@keyframes wob{50%{transform:rotate(-8deg) scale(1.08)}}
+.card3 h3{font-size:clamp(19px,2.6vw,23px);line-height:1.25;margin-bottom:10px}
+.card3 p{color:var(--muted);line-height:1.55;font-weight:600}
+h2{font-size:clamp(28px,5vw,48px);line-height:1.1;letter-spacing:-.02em;max-width:18ch}
+
+/* накладная */
+.invoice{position:relative;max-width:640px;margin:34px auto 0;background:#fff;border-radius:18px;padding:30px 26px 96px;box-shadow:0 24px 50px rgba(80,60,120,.16);font-variant-numeric:tabular-nums;transform:rotate(-1.2deg)}
+.invoice::before,.invoice::after{content:"";position:absolute;left:0;right:0;height:14px;background:radial-gradient(circle at 10px 0,transparent 8px,#fff 9px) 0 0/20px 14px}
+.invoice::before{top:-13px;transform:scaleY(-1)}.invoice::after{bottom:-13px}
+.inv-head{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;border-bottom:2px dashed #e5d9f5;padding-bottom:14px;margin-bottom:10px;font-weight:700;font-size:14px;color:var(--muted)}
+.inv-head b{display:block;color:var(--ink);font-size:17px;font-family:Unbounded}
+.row{display:grid;grid-template-columns:1fr auto;gap:14px;padding:11px 0;border-bottom:1px solid #f1eaf8;font-weight:700;opacity:0;transform:translateX(-18px);transition:all .5s ease}
+.invoice.in .row{opacity:1;transform:none}
+.row span:last-child{color:var(--rose);font-family:Unbounded;font-weight:500;font-size:15px;white-space:nowrap}
+.total{display:flex;justify-content:space-between;align-items:center;margin-top:18px;font-family:Unbounded;font-size:clamp(17px,3vw,22px)}
+.total em{font-style:normal;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent;font-weight:800}
+.stamp{position:absolute;right:22px;bottom:22px;border:4px solid #1fb386;color:#1fb386;font-family:Unbounded;font-weight:800;font-size:clamp(16px,3.4vw,24px);padding:8px 14px;border-radius:10px;letter-spacing:.06em;transform:rotate(-14deg) scale(2.6);opacity:0;mix-blend-mode:multiply;background:rgba(31,179,134,.06)}
+.invoice.in .stamp{animation:slam .5s 2.2s cubic-bezier(.3,1.6,.5,1) forwards}
+@keyframes slam{to{transform:rotate(-14deg) scale(1);opacity:.92}}
+
+/* галерея */
+.gallery{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;margin-top:38px;align-items:start}
+.pol{background:#fff;padding:12px 12px 16px;border-radius:12px;box-shadow:0 18px 36px rgba(60,40,90,.18);transform:rotate(var(--r));transition:transform .4s cubic-bezier(.2,1.2,.3,1),box-shadow .4s;cursor:pointer}
+.pol:nth-child(even){margin-top:34px}
+.pol:hover,.pol.hot{transform:rotate(0) scale(1.07) translateY(-6px);box-shadow:0 30px 50px rgba(60,40,90,.28);z-index:3}
+.pol img{width:100%;aspect-ratio:.8;object-fit:cover;border-radius:6px}
+.pol:nth-child(4) img{object-position:60% 50%}
+.pol figcaption{margin-top:12px;font-weight:800;text-align:center;font-size:14px}
+
+/* желание + торт */
+.finale{text-align:center}
+.finale h2{margin:0 auto 12px}
+.wish{margin:26px auto 0;min-height:3.2em;font-family:Unbounded;font-weight:500;font-size:clamp(17px,3vw,24px);max-width:24ch;line-height:1.4}
+.cake{position:relative;width:min(70vw,260px);margin:38px auto 8px;cursor:pointer}
+.cake svg{width:100%;overflow:visible}
+.flame{transform-origin:50% 100%;animation:flicker .18s ease-in-out infinite alternate}
+@keyframes flicker{from{transform:scale(1,1) rotate(-3deg)}to{transform:scale(.92,1.1) rotate(3deg)}}
+.cake.off .flame{display:none}
+.smoke{opacity:0}
+.cake.off .smoke{animation:smoke 2.4s ease-out forwards}
+@keyframes smoke{0%{opacity:.7;transform:translateY(0)}100%{opacity:0;transform:translateY(-46px)}}
+.hint{color:var(--muted);font-weight:700;margin-top:6px}
+.from{margin-top:54px;font-weight:700;color:var(--muted);line-height:1.7}
+.from b{display:block;font-family:Unbounded;font-size:clamp(18px,3vw,24px);color:var(--ink);margin-top:4px}
+
+.spk{position:fixed;width:10px;height:10px;pointer-events:none;z-index:70;border-radius:50%;animation:spk .8s ease-out forwards}
+@keyframes spk{to{transform:translate(var(--dx),var(--dy)) scale(0);opacity:0}}
+
+@media (max-width:820px){
+  .hero{padding-top:70px}
+  .hero .wrap{grid-template-columns:1fr;text-align:center}
+  .hero .tag{margin:0 auto}
+  .scroll-hint{justify-content:center}
+  .portrait{order:-1;width:min(66vw,320px)}
+  .cards{grid-template-columns:1fr}
+  .gallery{grid-template-columns:repeat(2,1fr);gap:16px}
+  .pol:nth-child(even){margin-top:22px}
+  h2{max-width:none}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.001s!important;animation-iteration-count:1!important;transition-duration:.001s!important}
+  .balloons,canvas#confetti{display:none}
+}
+</style>
+</head>
+<body class="locked">
+<div class="bg"></div><div class="blob b1"></div><div class="blob b2"></div>
+<canvas id="confetti"></canvas>
+<div class="balloons" id="balloons" aria-hidden="true"></div>
+
+<div id="intro">
+  <div class="intro-box">
+    <div class="envelope" id="env" role="button" tabindex="0" aria-label="Открыть конверт">
+      <div class="back"></div>
+      <div class="card">Для Яны</div>
+      <div class="front"></div>
+      <div class="flap"></div>
+      <div class="heart">💌</div>
+    </div>
+    <p>Тут тебя ждёт поздравление</p>
+    <button class="btn" id="openBtn">Открыть</button>
+  </div>
+</div>
+
+<header class="hero" id="top">
+  <div class="wrap">
+    <div>
+      <span class="eyebrow">Сегодня особенный день</span>
+      <h1 id="name" aria-label="Яна"><span class="l">Я</span><span class="l">н</span><span class="l">а</span></h1>
+      <div class="hb"><span id="typed"></span><span class="caret"></span></div>
+      <p class="tag">Замечательный человек, фантастический закупщик и легенда команды СТМ.</p>
+      <div class="scroll-hint"><i></i> листай вниз, там сюрпризы</div>
+    </div>
+    <div class="portrait">
+      <div class="ring"></div>
+      <div class="ph"><img src="img/sunset.jpg" alt="Яна" fetchpriority="high"></div>
+      <span class="spark s1">✨</span><span class="spark s2">💖</span><span class="spark s3">⭐</span><span class="spark s4">✨</span>
+    </div>
+  </div>
+</header>
+
+<section>
+  <div class="wrap">
+    <span class="eyebrow reveal">Коротко о главном</span>
+    <h2 class="reveal">Три факта, которые не требуют согласования</h2>
+    <div class="cards">
+      <article class="card3 reveal" style="--c:var(--rose)">
+        <div class="ico">💖</div>
+        <h3>Замечательный человек</h3>
+        <p>С тобой хорошо и в работе, и в чате, и на любой планёрке. Это без скидок и акций.</p>
+      </article>
+      <article class="card3 reveal" style="--c:var(--mint);transition-delay:.12s">
+        <div class="ico">📦</div>
+        <h3>Фантастический закупщик</h3>
+        <p>Договаривается так, что поставщики сами присылают лучшие условия. Магия, не иначе.</p>
+      </article>
+      <article class="card3 reveal" style="--c:var(--sun);transition-delay:.24s">
+        <div class="ico">🏆</div>
+        <h3>Легенда команды СТМ</h3>
+        <p>Про такое пишут в учебниках по собственным торговым маркам. Мы просто рады, что работаем рядом.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <span class="eyebrow reveal">Документ</span>
+    <h2 class="reveal">Накладная на поздравление</h2>
+    <div class="invoice reveal" id="invoice">
+      <div class="inv-head">
+        <div>Поставщик<b>Команда СТМ</b></div>
+        <div>Получатель<b>Яна 🎂</b></div>
+      </div>
+      <div class="row" style="transition-delay:.2s"><span>Хорошее настроение</span><span>∞ шт.</span></div>
+      <div class="row" style="transition-delay:.5s"><span>Тёплые слова от команды</span><span data-count="100">0 %</span></div>
+      <div class="row" style="transition-delay:.8s"><span>Тортик</span><span>1 шт.</span></div>
+      <div class="row" style="transition-delay:1.1s"><span>Срывы сроков поставки</span><span>0 шт.</span></div>
+      <div class="row" style="transition-delay:1.4s"><span>Скидки от всех поставщиков</span><span>максимальные</span></div>
+      <div class="total"><span>Итого к получению</span><em>бесценно</em></div>
+      <div class="stamp">СОГЛАСОВАНО</div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <span class="eyebrow reveal">Фотоархив</span>
+    <h2 class="reveal">Кадры, из которых можно собрать отличное лето</h2>
+    <div class="gallery">
+      <figure class="pol reveal" style="--r:-4deg"><img loading="lazy" src="img/mountain.jpg" alt="Яна в горах"><figcaption>Покорение вершин</figcaption></figure>
+      <figure class="pol reveal" style="--r:3deg;transition-delay:.1s"><img loading="lazy" src="img/river.jpg" alt="Яна у горной реки"><figcaption>Счастье у воды</figcaption></figure>
+      <figure class="pol reveal" style="--r:-2deg;transition-delay:.2s"><img loading="lazy" src="img/sunset.jpg" alt="Яна на закате"><figcaption>Закат принят без замечаний</figcaption></figure>
+      <figure class="pol reveal" style="--r:4deg;transition-delay:.3s"><img loading="lazy" src="img/alpaca.jpg" alt="Яна и альпака"><figcaption>Переговоры с поставщиком шерсти</figcaption></figure>
+    </div>
+  </div>
+</section>
+
+<section class="finale">
+  <div class="wrap">
+    <span class="eyebrow reveal">Финал</span>
+    <h2 class="reveal">Загадывай желание и задувай свечу</h2>
+    <div class="cake reveal" id="cake" role="button" tabindex="0" aria-label="Задуть свечу">
+      <svg viewBox="0 0 260 250">
+        <ellipse cx="130" cy="232" rx="118" ry="14" fill="rgba(70,40,100,.15)"/>
+        <rect x="26" y="150" width="208" height="80" rx="18" fill="#ffd6e3"/>
+        <path d="M26 168c18 16 34 16 52 0s34-16 52 0 34 16 52 0 34-16 52 0v-18c0-10-8-18-18-18H44c-10 0-18 8-18 18z" fill="#fff"/>
+        <rect x="26" y="196" width="208" height="14" fill="#ff8fb4"/>
+        <rect x="52" y="96" width="156" height="68" rx="16" fill="#ffb899"/>
+        <path d="M52 118c14 14 26 14 39 0s26-14 39 0 26 14 39 0 26-14 39 0v-12c0-8-6-14-14-14H66c-8 0-14 6-14 14z" fill="#fff"/>
+        <rect x="124" y="52" width="12" height="46" rx="4" fill="#9f7bff"/>
+        <g class="flame"><path d="M130 14c12 14 14 24 0 34-14-10-12-20 0-34z" fill="#ffd166"/><path d="M130 26c6 8 7 13 0 18-7-5-6-10 0-18z" fill="#ff7a3d"/></g>
+        <g class="smoke"><path d="M130 40c-6-8 6-12 0-20" stroke="#9a8fb0" stroke-width="3" fill="none" stroke-linecap="round"/></g>
+        <circle cx="70" cy="188" r="5" fill="#ff6fa5"/><circle cx="130" cy="183" r="5" fill="#9f7bff"/><circle cx="190" cy="188" r="5" fill="#7fe3c4"/>
+      </svg>
+    </div>
+    <p class="hint" id="hint">Нажми на торт</p>
+    <div class="wish" id="wish"></div>
+    <button class="btn reveal" id="wishBtn" style="margin-top:20px">Ещё пожелание</button>
+    <p class="from reveal">С любовью, теплом и уважением<b>Твоя любящая команда 💖</b></p>
+  </div>
+</section>
+
+<script>
+(() => {
+  const $ = (s, r = document) => r.querySelector(s);
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* ---------- конфетти ---------- */
+  const cv = $('#confetti'), ctx = cv.getContext('2d');
+  let W, H, parts = [], running = false;
+  const COLORS = ['#ff9a76', '#ff6fa5', '#9f7bff', '#7fe3c4', '#ffd166', '#ffffff'];
+  const fit = () => { const d = Math.min(devicePixelRatio || 1, 2); W = cv.width = innerWidth * d; H = cv.height = innerHeight * d; ctx.setTransform(d, 0, 0, d, 0, 0); };
+  addEventListener('resize', fit); fit();
+  function burst(x, y, n = 90, power = 1) {
+    if (reduce) return;
+    for (let i = 0; i < n; i++) {
+      const a = Math.random() * Math.PI * 2, v = (4 + Math.random() * 9) * power;
+      parts.push({ x, y, vx: Math.cos(a) * v, vy: Math.sin(a) * v - 5 * power, w: 6 + Math.random() * 7, h: 3 + Math.random() * 5, r: Math.random() * 6, vr: (Math.random() - .5) * .4, c: COLORS[(Math.random() * COLORS.length) | 0], life: 1, shape: Math.random() < .25 ? 'c' : 'r' });
+    }
+    if (!running) { running = true; requestAnimationFrame(tick); }
+  }
+  function rain(ms = 3500) {
+    if (reduce) return;
+    const end = performance.now() + ms;
+    (function f() {
+      for (let i = 0; i < 3; i++) parts.push({ x: Math.random() * innerWidth, y: -10, vx: (Math.random() - .5) * 2, vy: 2 + Math.random() * 3, w: 6 + Math.random() * 6, h: 3 + Math.random() * 5, r: Math.random() * 6, vr: (Math.random() - .5) * .3, c: COLORS[(Math.random() * COLORS.length) | 0], life: 1.4, shape: 'r' });
+      if (!running) { running = true; requestAnimationFrame(tick); }
+      if (performance.now() < end) setTimeout(f, 60);
+    })();
+  }
+  function tick() {
+    ctx.clearRect(0, 0, innerWidth, innerHeight);
+    parts = parts.filter(p => p.life > 0 && p.y < innerHeight + 40);
+    for (const p of parts) {
+      p.vy += .22; p.vx *= .992; p.x += p.vx; p.y += p.vy; p.r += p.vr; p.life -= .006;
+      ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.r); ctx.globalAlpha = Math.min(1, p.life * 1.4); ctx.fillStyle = p.c;
+      if (p.shape === 'c') { ctx.beginPath(); ctx.arc(0, 0, p.w / 2.2, 0, 7); ctx.fill(); } else ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+      ctx.restore();
+    }
+    if (parts.length) requestAnimationFrame(tick); else { running = false; ctx.clearRect(0, 0, innerWidth, innerHeight); }
+  }
+
+  /* ---------- шарики ---------- */
+  function balloons() {
+    if (reduce) return;
+    const box = $('#balloons'), cols = ['#ff9a76', '#ff6fa5', '#9f7bff', '#7fe3c4', '#ffd166', '#ff8fb4'];
+    for (let i = 0; i < 10; i++) {
+      const b = document.createElement('div'); b.className = 'balloon';
+      const c = cols[i % cols.length];
+      b.style.cssText = `left:${(i * 7.3 + Math.random() * 6) % 96}%;background:radial-gradient(circle at 32% 28%,rgba(255,255,255,.75),${c} 55%);border-bottom-color:${c};animation-duration:${14 + Math.random() * 12}s;animation-delay:${Math.random() * 9}s;scale:${.7 + Math.random() * .7}`;
+      box.appendChild(b);
+    }
+  }
+
+  /* ---------- вход ---------- */
+  const intro = $('#intro'), env = $('#env');
+  function openCard() {
+    if (env.classList.contains('open')) return;
+    env.classList.add('open');
+    const r = env.getBoundingClientRect();
+    burst(r.left + r.width / 2, r.top + r.height / 2, 110, 1.1);
+    setTimeout(() => {
+      intro.classList.add('gone');
+      document.body.classList.remove('locked');
+      document.body.classList.add('started');
+      balloons(); rain(3200); typeIt();
+      burst(innerWidth * .2, innerHeight * .6, 80); burst(innerWidth * .8, innerHeight * .6, 80);
+    }, 1100);
+  }
+  env.addEventListener('click', openCard); $('#openBtn').addEventListener('click', openCard);
+  env.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') openCard(); });
+
+  /* ---------- «печатная машинка» ---------- */
+  function typeIt() {
+    const t = $('#typed'), s = 'С Днём рождения!'; let i = 0;
+    (function f() { t.textContent = s.slice(0, ++i); if (i < s.length) setTimeout(f, 70); })();
+  }
+  document.querySelectorAll('#name .l').forEach((l, i) => l.style.animationDelay = (0.15 + i * .18) + 's');
+
+  /* ---------- появление при прокрутке ---------- */
+  const io = new IntersectionObserver(es => es.forEach(e => {
+    if (!e.isIntersecting) return;
+    e.target.classList.add('in'); io.unobserve(e.target);
+    if (e.target.id === 'invoice') {
+      const c = e.target.querySelector('[data-count]'); let v = 0;
+      const id = setInterval(() => { v += 5; c.textContent = v + ' %'; if (v >= 100) clearInterval(id); }, 28);
+      setTimeout(() => { const r = e.target.getBoundingClientRect(); burst(r.left + r.width - 60, r.top + r.height - 70, 50, .8); }, 2500);
+    }
+  }), { threshold: .18 });
+  document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+
+  /* ---------- торт и желания ---------- */
+  const cake = $('#cake'), hint = $('#hint'), wish = $('#wish');
+  const WISHES = [
+    'Пусть все поставки приходят вовремя и в нужном количестве 📦',
+    'Пусть поставщики сами снижают цены, а ты только выбираешь 💸',
+    'Пусть в календаре будет больше отпусков и меньше созвонов 🏔️',
+    'Пусть каждый месяц план перевыполняется, а настроение нет 😄',
+    'Пусть рядом всегда будут люди, с которыми легко и весело 💖',
+    'Пусть новый год жизни окажется лучшей партией в твоём заказе ✨',
+    'Пусть ни один паллет не потеряется, а все мечты доедут до адреса 🚚',
+  ];
+  let wi = 0;
+  function newWish() { wish.textContent = WISHES[wi++ % WISHES.length]; wish.animate([{ opacity: 0, transform: 'translateY(14px)' }, { opacity: 1, transform: 'none' }], { duration: 500, easing: 'ease-out' }); }
+  function blow() {
+    if (cake.classList.contains('off')) { burst(innerWidth / 2, innerHeight * .55, 70); return; }
+    cake.classList.add('off'); hint.textContent = 'Желание загадано. Оно обязательно сбудется 🎉';
+    const r = cake.getBoundingClientRect();
+    burst(r.left + r.width / 2, r.top + 20, 150, 1.2); rain(2800); newWish();
+  }
+  cake.addEventListener('click', blow);
+  cake.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); blow(); } });
+  $('#wishBtn').addEventListener('click', e => { newWish(); const r = e.target.getBoundingClientRect(); burst(r.left + r.width / 2, r.top, 60); });
+
+  /* ---------- фото: тап поднимает карточку ---------- */
+  document.querySelectorAll('.pol').forEach(p => p.addEventListener('click', () => { p.classList.toggle('hot'); const r = p.getBoundingClientRect(); burst(r.left + r.width / 2, r.top + r.height / 2, 40, .7); }));
+
+  /* ---------- искры от курсора и клика ---------- */
+  let last = 0;
+  function spark(x, y) {
+    const s = document.createElement('i'); s.className = 'spk';
+    s.style.cssText = `left:${x}px;top:${y}px;background:${COLORS[(Math.random() * 5) | 0]};--dx:${(Math.random() - .5) * 60}px;--dy:${20 + Math.random() * 40}px`;
+    document.body.appendChild(s); setTimeout(() => s.remove(), 800);
+  }
+  if (!reduce && matchMedia('(pointer:fine)').matches) addEventListener('pointermove', e => { const n = performance.now(); if (n - last > 45) { last = n; spark(e.clientX, e.clientY); } });
+  addEventListener('pointerdown', e => { if (!intro.classList.contains('gone') || e.target.closest('.cake,.btn,.pol')) return; burst(e.clientX, e.clientY, 26, .6); });
+
+  window.__yana = { burst, rain, openCard };
+})();
+</script>
+</body>
+</html>
